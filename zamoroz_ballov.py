@@ -22,13 +22,13 @@ def all_status():
     return mydictState
 
 
-def status(zakaz):
+def status(zakaz,current_status):
     print("начинаем")
     headers2 = {
         "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
     }
     data2 = {
-        "state": all_status()['Доставлен']
+        "state": all_status()[current_status]
     }
     url2 = f"https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}"
     a3 = requests.put(url2, headers=headers2, json=data2)
@@ -38,7 +38,7 @@ def status(zakaz):
     return a3.status_code
 
 
-def hours7(city, url, headers, params):  # Для саратова и балаково
+def hours7(city, url, headers, params, current_status):  # Для саратова и балаково
     for offset in range(0, 1000, 100):
         req = requests.get(url, headers=headers, params=params)
         data = req.json()
@@ -50,7 +50,7 @@ def hours7(city, url, headers, params):  # Для саратова и балак
                     zakazi.append(zakaz['id'])
                     # print(status(zakaz['id']))
         for zak1 in zakazi:
-            print(status(zak1))
+            print(status(zak1, current_status))
         if len(data['rows']) < 100:
             break
 
@@ -63,11 +63,12 @@ def main(url, headers, params):
     }
     while True:
         current_time = datetime.now().time()  # текущее время
+        current_status = 'Доставлен'
         for time_item in time_city:
             print(current_time.hour, current_time.minute)
             if current_time.hour == time_item and current_time.minute == 0:
                 print(f"Время {time_item}ч, выполняю задачу", f"-[{current_time}]-")
-                hours7(time_city[time_item], url, headers, params)
+                hours7(time_city[time_item], url, headers, params, current_status)
                 time.sleep(60)
             else:
                 print("Никуя")
@@ -75,9 +76,10 @@ def main(url, headers, params):
             print("Начало часа, отписываюсь, время -", current_time)
             state = "Истек срок резерва"
             params2 = params.copy()
+            current_status = 'Отменен'
             params2["filter"] = f"state.name={state}"
             all_city = list(j for n in time_city.values() for j in n)
-            hours7(all_city, url, headers, params2)
+            hours7(all_city, url, headers, params2, current_status)
 
         time.sleep(20)  # пауза в 20 секунд между проверками
 

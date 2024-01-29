@@ -1,0 +1,162 @@
+{
+    "Новый": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/15036c88-0033-11ec-0a80-094500120852",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Qubox.Pro": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/014b1e13-c7a1-11eb-0a80-079200322f4f",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Предоплата": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/1fce8a98-0d3f-11eb-0a80-005c000983ca",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "0/0/30": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/d52829ad-4c80-11ed-0a80-03de001b6ebf",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Согласован": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/2a26dd01-1471-11eb-0a80-0191000e70d5",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Отправлен": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/2a26e074-1471-11eb-0a80-0191000e70d9",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Транзит": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/af9acdd6-2eba-11ed-0a80-080200121b10",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Прибыл": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/2a26e233-1471-11eb-0a80-0191000e70db",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "В обработке": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/af9ad060-2eba-11ed-0a80-080200121b11",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Доставлен (Без СМС)": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/37125417-335a-11ed-0a80-0e48000f8f8a",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Выполнен": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/2a26e7a7-1471-11eb-0a80-0191000e70e1",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Доставлен": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/0aaa9cf9-bc24-11ee-0a80-0bae000868b4",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Доставлен - клиент не доволен": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/a229ae4e-1471-11eb-0a80-03e9000d6dc5",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Отменен": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/a229afdd-1471-11eb-0a80-03e9000d6dc7",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Возврат от клиента": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/e7e140d9-91ff-11eb-0a80-00c3001b989c",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Новый нераспределенный": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/35497697-0d40-11eb-0a80-005c0009ae1e",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Истек срок резерва": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/1f6459d0-7fa9-11ed-0a80-05a100414be8",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Теплый клиент": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/fb0627b9-090b-11ee-0a80-13d7003f3df9",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Доставка": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/e8cdde30-4286-11ee-0a80-106a00267ed1",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    },
+    "Предзаказ": {
+        "meta": {
+            "href": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/states/24bab7c9-45a8-11ee-0a80-13bd0062cb94",
+            "metadataHref": "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata",
+            "type": "state",
+            "mediaType": "application/json"
+        }
+    }
+}

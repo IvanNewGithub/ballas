@@ -11,7 +11,7 @@ def all_status():
     }
     url = "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata"
     mydictState = {}
-    req = requests.get(url, headers=headers).json()
+    req = requests.get(url, headers=headers2).json()
     for item in req['states']:
         mydictState[item['name']] = {}
         mydictState[item['name']]['meta'] = item['meta']
@@ -64,14 +64,7 @@ def main(url, headers, params):
         time.sleep(20)  # пауза в 20 секунд между проверками
 
 
-if __name__ == '__main__':
-    url = "https://api.moysklad.ru/api/remap/1.2/entity/customerorder"
-    headers = {
-        "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ==',
-        "Accept-Encoding": "gzip"
-    }
-
-    offset = 0
+def start_1hours(url, headers): # Перевод в Доставлен
     state = "Доставлен (Без СМС)"
     params = {
         "limit": 100,
@@ -80,3 +73,13 @@ if __name__ == '__main__':
         "expand": "organization"
     }
     main(url, headers, params)  # запуск основной функции
+
+if __name__ == '__main__':
+    url = "https://api.moysklad.ru/api/remap/1.2/entity/customerorder"
+    headers = {
+        "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ==',
+        "Accept-Encoding": "gzip"
+    }
+
+    offset = 0
+    start_1hours(url, headers) # Перевод в Доставлен

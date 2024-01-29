@@ -4,7 +4,10 @@ import requests
 import time
 from datetime import datetime
 
-
+# dsfasdasdasd
+# asdasdasdasdas
+#
+# asdasdasd
 def all_status():
     headers2 = {
         "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
@@ -59,7 +62,7 @@ def main(url, headers, params):
                 hours7(time_city[time_item], url, headers, params)
                 time.sleep(60)
         if not current_time.hour in time_city and current_time.minute == 0:
-            print("Начало часа, отписываюсь, в2ремя -", current_time)
+            print("Начало часа, отписываюсь, время -", current_time)
 
         time.sleep(20)  # пауза в 20 секунд между проверками
 

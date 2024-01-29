@@ -4,10 +4,7 @@ import requests
 import time
 from datetime import datetime
 
-# dsfasdasdasd
-# asdasdasdasdas
-#
-# asdasdasd
+
 def all_status():
     headers2 = {
         "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
@@ -21,52 +18,65 @@ def all_status():
 
     return mydictState
 
-
 def status(zakaz):
+    print("начинаем")
     headers2 = {
         "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
     }
     data2 = {
-        "state": {
-            all_status()['Доставлен']
-        }}
+        "state": all_status()['Доставлен']
+    }
     url2 = f"https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}"
     a3 = requests.put(url2, headers=headers2, json=data2)
-    time.sleep(1)
+    print(a3, a3.text)
+    print(zakaz)
+    time.sleep(10000)
     return a3.status_code
 
 
 def hours7(city, url, headers, params):  # Для саратова и балаково
     for offset in range(0, 1000, 100):
-        state = "Доставлен (Без СМС)"
         req = requests.get(url, headers=headers, params=params)
         data = req.json()
+        zakazi = []
         for zakaz in data['rows']:
-            if zakaz['organization']['name'] in city:
-                print(status(zakaz['id']))
-        if data['rows'] < 100:
+            for cities in city:
+                if cities in zakaz['organization']['name'].lower():
+                    print("я тут")
+                    zakazi.append(zakaz['id'])
+                    # print(status(zakaz['id']))
+        for zak1 in zakazi:
+            print(status(zak1))
+        if len(data['rows']) < 100:
             break
 
 
 def main(url, headers, params):
     time_city = {
-        7: ('саратов', 'балаково'),
-        8: ('воронеж', 'липецк')
+        19: ('саратов', 'балаково'),
+        20: ('воронеж', 'липецк')
 
     }
     while True:
         current_time = datetime.now().time()  # текущее время
         for time_item in time_city:
+            print(current_time.hour, current_time.minute)
             if current_time.hour == time_item and current_time.minute == 0:
                 print(f"Время {time_item}ч, выполняю задачу", f"-[{current_time}]-")
                 hours7(time_city[time_item], url, headers, params)
                 time.sleep(60)
-        if not current_time.hour in time_city and current_time.minute == 0:
+            else:
+                print("Никуя")
+        if not current_time.hour in time_city and current_time.minute == 0:  #`123123
             print("Начало часа, отписываюсь, время -", current_time)
+            state = "Истек срок резерва"
+            params2 = params.copy()
+            params2["filter"] = f"state.name={state}"
+            hours7(url, headers, params2)
 
         time.sleep(20)  # пауза в 20 секунд между проверками
 
-a = 1231 #123123123123
+a = 1231 #1231231231232
 def start_1hours(url, headers): # Перевод в Доставлен
     state = "Доставлен (Без СМС)"
     params = {

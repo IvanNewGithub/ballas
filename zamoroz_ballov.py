@@ -2,7 +2,7 @@ import json
 
 import requests
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # dsfasdasdasd
 # asdasdasdasdas
@@ -20,7 +20,22 @@ def all_status():
         mydictState[item['name']]['meta'] = item['meta']
 
     return mydictState
-
+def edit_datetime(zakaz):
+    current_time = datetime.now()
+    headers2 = {
+        "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
+    }
+    url = f'https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}/audit'
+    req = requests.get(url, headers=headers2).json()
+    for item in req['rows']:
+        time_delta = start_time = datetime.strptime(item['moment'], "%Y-%m-%d %H:%M:%S.%f")
+        time_difference = current_time - start_time
+        # Проверяем, прошло ли более 48 часов
+        if item['diff']['state']:
+            if time_difference > timedelta(hours=48):
+                return True
+            else:
+                return False
 
 def status(zakaz,current_status):
     print("начинаем")
@@ -31,7 +46,11 @@ def status(zakaz,current_status):
         "state": all_status()[current_status]
     }
     url2 = f"https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}"
-    a3 = requests.put(url2, headers=headers2, json=data2)
+    if current_status == 'Отменен':
+        if edit_datetime(zakaz):
+            a3 = requests.put(url2, headers=headers2, json=data2)
+    else:
+        a3 = requests.put(url2, headers=headers2, json=data2)
     print(a3, a3.text)
     print(zakaz)
     time.sleep(10000)
@@ -40,6 +59,7 @@ def status(zakaz,current_status):
 
 def hours7(city, url, headers, params, current_status):  # Для саратова и балаково
     for offset in range(0, 1000, 100):
+        params['offset'] = offset
         req = requests.get(url, headers=headers, params=params)
         data = req.json()
         zakazi = []

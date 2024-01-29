@@ -63,7 +63,7 @@ def main(url, headers, params):
 
         time.sleep(20)  # пауза в 20 секунд между проверками
 
-a = 123
+a = 1231
 def start_1hours(url, headers): # Перевод в Доставлен
     state = "Доставлен (Без СМС)"
     params = {

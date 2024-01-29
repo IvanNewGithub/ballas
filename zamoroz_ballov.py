@@ -4,7 +4,10 @@ import requests
 import time
 from datetime import datetime
 
-
+# dsfasdasdasd
+# asdasdasdasdas
+#
+# asdasdasd
 def all_status():
     headers2 = {
         "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
@@ -17,6 +20,7 @@ def all_status():
         mydictState[item['name']]['meta'] = item['meta']
 
     return mydictState
+
 
 def status(zakaz):
     print("начинаем")
@@ -72,7 +76,8 @@ def main(url, headers, params):
             state = "Истек срок резерва"
             params2 = params.copy()
             params2["filter"] = f"state.name={state}"
-            hours7(url, headers, params2)
+            all_city = list(j for n in time_city.values() for j in n)
+            hours7(all_city, url, headers, params2)
 
         time.sleep(20)  # пауза в 20 секунд между проверками
 

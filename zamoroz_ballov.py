@@ -29,7 +29,7 @@ def status(zakaz):
         }}
     url2 = f"https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}"
     a3 = requests.put(url2, headers=headers2, json=data2)
-    time.sleep(0.1)
+    time.sleep(1)
     return a3.status_code
 
 
@@ -63,7 +63,7 @@ def main(url, headers, params):
 
         time.sleep(20)  # пауза в 20 секунд между проверками
 
-
+a = 123
 def start_1hours(url, headers): # Перевод в Доставлен
     state = "Доставлен (Без СМС)"
     params = {

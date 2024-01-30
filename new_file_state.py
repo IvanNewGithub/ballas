@@ -104,8 +104,8 @@ class watch_edit_time:
                 if 'diff' in item and 'state' in item['diff']:  # Проверяем, прошло ли более 48 часов
                     if time_difference > timedelta(days=14):
                         result.append(zakaz)
-                elif 'diff' not in item:
-                    print(zakaz)
+                # else :
+                #     print(zakaz)
         return result
 
 
@@ -121,10 +121,11 @@ def main():
             # Шаг №1 получить заказы с определенным статусом с определенным городом
             zakaz_overdue = product(all_city,  "Истек срок резерва").result() #  Находим заказы с статусом Истек срок резерва
             zakaz_dostavlen = product(all_city, ('Доставлен', 'Доставлен - клиент не доволен')).result() #  Находим заказы с статусом Доставлен и доставлен не доволен
-            print('zakaz_dostavlen', '->', zakaz_dostavlen)
+
             # Проверяем полученные заказы, соответствуют ли они времени
             true_zakaz_overdue = watch_edit_time(zakaz_overdue).result_hours()
             true_zakaz_dostavlen = watch_edit_time(zakaz_dostavlen).result_days()
+            print('true_zakaz_dostavlen', '->', true_zakaz_dostavlen)
 
             # Изменяем статусы, на те что нам нужны
             edit_state("Отменен", true_zakaz_overdue).upgrade_state()

@@ -4,10 +4,7 @@ import requests
 import time
 from datetime import datetime, timedelta
 
-# dsfasdasdasd
-# asdasdasdasdas
-#
-# asdasdasd
+
 def all_status():
     headers2 = {
         "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
@@ -28,17 +25,16 @@ def edit_datetime(zakaz):
     url = f'https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}/audit'
     req = requests.get(url, headers=headers2).json()
     for item in req['rows']:
-        time_delta = start_time = datetime.strptime(item['moment'], "%Y-%m-%d %H:%M:%S.%f")
+        start_time = datetime.strptime(item['moment'], "%Y-%m-%d %H:%M:%S.%f")
         time_difference = current_time - start_time
         # Проверяем, прошло ли более 48 часов
-        if item['diff']['state']:
+        if 'state' in item['diff']:
             if time_difference > timedelta(hours=48):
                 return True
             else:
                 return False
 
 def status(zakaz,current_status):
-    print("начинаем")
     headers2 = {
         "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
     }
@@ -47,8 +43,10 @@ def status(zakaz,current_status):
     }
     url2 = f"https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}"
     if current_status == 'Отменен':
-        if edit_datetime(zakaz):
+        if edit_datetime(zakaz) == True:
             a3 = requests.put(url2, headers=headers2, json=data2)
+        else:
+            return f'Дата у заказа {zakaz} не соответствует условию 48 часов'
     else:
         a3 = requests.put(url2, headers=headers2, json=data2)
     print(a3, a3.text)
@@ -68,7 +66,6 @@ def hours7(city, url, headers, params, current_status):  # Для саратов
                 if cities in zakaz['organization']['name'].lower():
                     print("я тут")
                     zakazi.append(zakaz['id'])
-                    # print(status(zakaz['id']))
         for zak1 in zakazi:
             print(status(zak1, current_status))
         if len(data['rows']) < 100:
@@ -92,7 +89,7 @@ def main(url, headers, params):
                 time.sleep(60)
             else:
                 print("Никуя")
-        if not current_time.hour in time_city and current_time.minute == 0:  #`123123
+        if not current_time.hour in time_city and current_time.minute == 38:  #`123123
             print("Начало часа, отписываюсь, время -", current_time)
             state = "Истек срок резерва"
             params2 = params.copy()
@@ -103,7 +100,7 @@ def main(url, headers, params):
 
         time.sleep(20)  # пауза в 20 секунд между проверками
 
-a = 1231 #1231231231232
+
 def start_1hours(url, headers): # Перевод в Доставлен
     state = "Доставлен (Без СМС)"
     params = {

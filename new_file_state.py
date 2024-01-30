@@ -32,6 +32,20 @@ class edit_state:
             a3 = requests.put(url2, headers=headers, json=self.data)
             time.sleep(sec)
 
+    def search_id_WA(self):
+        id = []
+        for zakaz in self.all_zakaz:
+            url = f'https://hatiko.ru/api.php/shop.order.search?hash=search%2Fmoyskladapi_id%{zakaz}&access_token=6acf9ef3e246128715d8ecaf9d7e1a83'
+            id.append(requests.get(url).json()['orders'][0]['id'])
+        return id
+
+    def edit_stete_WA(self):
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        for id in self.all_zakaz:
+            data = {"id": f"{id}"}
+            req = requests.get('https://hatiko.ru/api.php/shop.order.complete?access_token=6acf9ef3e246128715d8ecaf9d7e1a83',
+                               headers, data=data)
+
 class product:
     def __init__(self, city,  state):
         self.city = city
@@ -106,6 +120,9 @@ def main():
             # Проверяем полученные заказы, соответствуют ли они времени
             true_zakaz_overdue = watch_edit_time(zakaz_overdue).result_hours()
             true_zakaz_dostavlen = watch_edit_time(zakaz_overdue).result_days()
+
+            """ Ищем id с Веб Асиста"""
+            id_zakaz = edit_state('asda', true_zakaz_dostavlen).search_id_WA()
 
             edit_zakaz_overdue = edit_state("Отменен", true_zakaz_overdue).upgrade_state()
             edit_zakaz_dostavlen = edit_state("Выполнен", true_zakaz_dostavlen).upgrade_state()

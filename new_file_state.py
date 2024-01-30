@@ -37,7 +37,6 @@ class edit_state:
 
     def search_id_WA(self):
         id = []
-        print('WA', self.all_zakaz)
         for zakaz in self.all_zakaz:
             url = f'https://hatiko.ru/api.php/shop.order.search?hash=search%2Fmoyskladapi_id%{zakaz}&access_token=6acf9ef3e246128715d8ecaf9d7e1a83'
             id.append(requests.get(url).json()['orders'][0]['id'])
@@ -45,7 +44,6 @@ class edit_state:
 
     def edit_stete_WA(self, sec = 20):
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        print(self.all_zakaz)
         for id in self.all_zakaz:
             data = {"id": f"{id}"}
             req = requests.post('https://hatiko.ru/api.php/shop.order.complete?access_token=6acf9ef3e246128715d8ecaf9d7e1a83',
@@ -64,7 +62,6 @@ class product:
             "filter": f"state.name={self.state}" if type(self.state) == str else ';'.join(('state.name=' + n for n in state)),
             "expand": "organization"
         }
-        # print(self.params)
     def result(self):
         zakazi = []
         for offset in range(0, 200, 100):
@@ -145,13 +142,11 @@ def main():
             # Шаг №1 получить заказы с определенным статусом с определенным городом
             zakaz_overdue = product(all_city,  "Истек срок резерва").result() #  Находим заказы с статусом Истек срок резерва
             zakaz_dostavlen = product(all_city, ('Доставлен', 'Доставлен - клиент не доволен')).result() #  Находим заказы с статусом Доставлен и доставлен не доволен
-
-            print('zakaz_dostavlen', '->', zakaz_dostavlen)
             # Проверяем полученные заказы, соответствуют ли они времени
             true_zakaz_overdue = watch_edit_time(zakaz_overdue).result_hours()
             true_zakaz_dostavlen = watch_edit_time(zakaz_dostavlen).result_days()
 
-            print('true_zakaz_dostavlen', '->', true_zakaz_dostavlen)
+            print('true_zakaz_dostavlen', 'Всего:', len(true_zakaz_dostavlen), '->', true_zakaz_dostavlen)
             # Изменяем статусы, на те что нам нужны
             edit_state("Отменен", true_zakaz_overdue).upgrade_state()
             edit_state("Выполнен", true_zakaz_dostavlen).upgrade_state()

@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 headers = {
         "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
     }
+def connect_MS(url):
+    return requests.get(url, headers=headers, timeout=120)
 
 def all_status():
     headers2 = {
@@ -35,6 +37,7 @@ class edit_state:
 
     def search_id_WA(self):
         id = []
+        print('WA', self.all_zakaz)
         for zakaz in self.all_zakaz:
             url = f'https://hatiko.ru/api.php/shop.order.search?hash=search%2Fmoyskladapi_id%{zakaz}&access_token=6acf9ef3e246128715d8ecaf9d7e1a83'
             id.append(requests.get(url).json()['orders'][0]['id'])
@@ -42,6 +45,7 @@ class edit_state:
 
     def edit_stete_WA(self, sec = 20):
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        print(self.all_zakaz)
         for id in self.all_zakaz:
             data = {"id": f"{id}"}
             req = requests.post('https://hatiko.ru/api.php/shop.order.complete?access_token=6acf9ef3e246128715d8ecaf9d7e1a83',
@@ -63,7 +67,7 @@ class product:
         # print(self.params)
     def result(self):
         zakazi = []
-        for offset in range(0, 1000, 100):
+        for offset in range(0, 200, 100):
             self.params['offset'] = offset
             req = requests.get(self.url, headers=headers, params=self.params)
             data = req.json()
@@ -82,30 +86,50 @@ class watch_edit_time:
     def result_hours(self):
         result = []
         for zakaz in self.all_zakaz:
+            time.sleep(1)
             url = f'https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}/audit'
             current_time = datetime.now()
-            req = requests.get(url, headers=headers).json()
-            for item in req['rows']:
+            while True:
+                req = connect_MS(url)
+                if req.status_code == 200:
+                    data = req.json()
+                    break
+                else:
+                    print("заного")
+                    time.sleep(1)
+            # req = requests.get(url, headers=headers).json()
+            for item in data['rows']:
                 start_time = datetime.strptime(item['moment'], "%Y-%m-%d %H:%M:%S.%f")
                 time_difference = current_time - start_time
                 if 'diff' in item and 'state' in item['diff']:  # Проверяем, прошло ли более 48 часов
                     if time_difference > timedelta(hours=48):
                         result.append(zakaz)
+                    break
         return result
     def result_days(self):
         result = []
         for zakaz in self.all_zakaz:
+            time.sleep(1)
             url = f'https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}/audit'
             current_time = datetime.now()
-            req = requests.get(url, headers=headers).json()
-            for item in req['rows']:
+            while True:
+                req = connect_MS(url)
+                if req.status_code == 200:
+                    data = req.json()
+                    break
+                else:
+                    print("заного")
+                    time.sleep(3)
+            for item in data['rows']:
                 start_time = datetime.strptime(item['moment'], "%Y-%m-%d %H:%M:%S.%f")
                 time_difference = current_time - start_time
                 if 'diff' in item and 'state' in item['diff']:  # Проверяем, прошло ли более 48 часов
-                    if time_difference > timedelta(days=14):
+                    if time_difference.days > 14:
+                        print(zakaz)
                         result.append(zakaz)
-                # else :
-                #     print(zakaz)
+                    break
+                else:
+                    print(time_difference.days)
         return result
 
 
@@ -122,11 +146,12 @@ def main():
             zakaz_overdue = product(all_city,  "Истек срок резерва").result() #  Находим заказы с статусом Истек срок резерва
             zakaz_dostavlen = product(all_city, ('Доставлен', 'Доставлен - клиент не доволен')).result() #  Находим заказы с статусом Доставлен и доставлен не доволен
 
+            print('zakaz_dostavlen', '->', zakaz_dostavlen)
             # Проверяем полученные заказы, соответствуют ли они времени
             true_zakaz_overdue = watch_edit_time(zakaz_overdue).result_hours()
             true_zakaz_dostavlen = watch_edit_time(zakaz_dostavlen).result_days()
-            print('true_zakaz_dostavlen', '->', true_zakaz_dostavlen)
 
+            print('true_zakaz_dostavlen', '->', true_zakaz_dostavlen)
             # Изменяем статусы, на те что нам нужны
             edit_state("Отменен", true_zakaz_overdue).upgrade_state()
             edit_state("Выполнен", true_zakaz_dostavlen).upgrade_state()
@@ -143,7 +168,7 @@ def main():
 
             if current_time.hour in time_city:
                 zakaz = product(time_city[current_time.hour],"Доставлен (Без СМС)").result()  # Находим заказы с статусом Доставлен, для определенных городов
-                edit_zakaz = edit_state("Доставлен", true_zakaz_dostavlen).upgrade_state(1)
+                edit_zakaz = edit_state("Доставлен", zakaz).upgrade_state(1)
 
         print('Уснули на 20 секунд')
         time.sleep(20)

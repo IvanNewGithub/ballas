@@ -26,10 +26,11 @@ class edit_state:
         self.all_zakaz = all_zakaz
         self.data = {"state": all_status()[current_status]}
 
-    def upgrade_state(self):
+    def upgrade_state(self, sec = 0):
         for zakaz in self.all_zakaz:
             url2 = f"https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}"
             a3 = requests.put(url2, headers=headers, json=self.data)
+            time.sleep(sec)
 
 class product:
     def __init__(self, city,  state):
@@ -111,7 +112,7 @@ def main():
 
             if current_time.hour in time_city:
                 zakaz = product(time_city[current_time.hour],"Доставлен (Без СМС)").result()  # Находим заказы с статусом Доставлен, для определенных городов
-                edit_zakaz = edit_state("Доставлен", true_zakaz_dostavlen).upgrade_state()
+                edit_zakaz = edit_state("Доставлен", true_zakaz_dostavlen).upgrade_state(1)
         time.sleep(20)
 
 

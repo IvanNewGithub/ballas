@@ -121,12 +121,20 @@ def main():
             # Проверяем полученные заказы, соответствуют ли они времени
             true_zakaz_overdue = watch_edit_time(zakaz_overdue).result_hours()
             true_zakaz_dostavlen = watch_edit_time(zakaz_dostavlen).result_days()
-            """ Ищем id с Веб Асиста"""
-            id_zakaz = edit_state('Выполнен', true_zakaz_dostavlen).search_id_WA()
-            edit_state('Выполнен', id_zakaz).edit_stete_WA()
 
+            # Изменяем статусы, на те что нам нужны
             edit_state("Отменен", true_zakaz_overdue).upgrade_state()
             edit_state("Выполнен", true_zakaz_dostavlen).upgrade_state()
+
+
+            """ Ищем id с Веб Асиста"""
+            if true_zakaz_dostavlen:
+                id_zakaz = edit_state('Выполнен', true_zakaz_dostavlen).search_id_WA()
+                edit_state('Выполнен', id_zakaz).edit_stete_WA()
+            else:
+                print('Заказов для редактирования в Web Asyst не найдено')
+
+
 
             if current_time.hour in time_city:
                 zakaz = product(time_city[current_time.hour],"Доставлен (Без СМС)").result()  # Находим заказы с статусом Доставлен, для определенных городов

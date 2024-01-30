@@ -26,10 +26,11 @@ class edit_state:
         self.all_zakaz = all_zakaz
         self.data = {"state": all_status()[current_status]}
 
-    def upgrade_state(self, sec = 0):
+    def upgrade_state(self, sec = 20):
         for zakaz in self.all_zakaz:
             url2 = f"https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}"
             a3 = requests.put(url2, headers=headers, json=self.data)
+            print(f'Изменили статус на {self.current_status} в Моем Складе с ID:', zakaz)
             time.sleep(sec)
 
     def search_id_WA(self):
@@ -39,12 +40,14 @@ class edit_state:
             id.append(requests.get(url).json()['orders'][0]['id'])
         return id
 
-    def edit_stete_WA(self):
+    def edit_stete_WA(self, sec = 20):
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         for id in self.all_zakaz:
             data = {"id": f"{id}"}
             req = requests.post('https://hatiko.ru/api.php/shop.order.complete?access_token=6acf9ef3e246128715d8ecaf9d7e1a83',
                                headers=headers, data=data)
+            print(f'Отредактировали заказ в WebAsyst с ID:', id)
+            time.sleep(sec)
 
 class product:
     def __init__(self, city,  state):
@@ -54,7 +57,7 @@ class product:
         self.params = {
             "limit": 100,
             "offset": 0,
-            "filter": f"state.name={self.state}" if self.state == type(str) else ','.join(('state.name='+ n for n in state)),
+            "filter": f"state.name={self.state}" if type(self.state) == str else ','.join(('state.name=' + n for n in state)),
             "expand": "organization"
         }
     def result(self):
@@ -66,7 +69,6 @@ class product:
             for zakaz in data['rows']:
                 for cities in self.city:
                     if cities in zakaz['organization']['name'].lower():
-                        print("я тут")
                         zakazi.append(zakaz['id'])
             if len(data['rows']) < 100:
                 break
@@ -85,7 +87,7 @@ class watch_edit_time:
             for item in req['rows']:
                 start_time = datetime.strptime(item['moment'], "%Y-%m-%d %H:%M:%S.%f")
                 time_difference = current_time - start_time
-                if 'state' in item['diff']:  # Проверяем, прошло ли более 48 часов
+                if 'diff' in item and 'state' in item['diff']:  # Проверяем, прошло ли более 48 часов
                     if time_difference > timedelta(hours=48):
                         result.append(zakaz)
         return result
@@ -110,32 +112,33 @@ def main():
     all_city = list(j for n in time_city.values() for j in n)
     while True:
         current_time = datetime.now().time()
-        if current_time.minute == 0: # Тут проверяем что должны быть ровные часы
+        if current_time.minute != 58: # Тут проверяем что должны быть ровные часы
             """ Надо из этой проверки запустить и 'отмененный статус' и 'доставлен' поменять в выполнен"""
             # В зависимости от статуса конечного
             # Шаг №1 получить заказы с определенным статусом с определенным городом
             zakaz_overdue = product(all_city,  "Истек срок резерва").result() #  Находим заказы с статусом Истек срок резерва
             zakaz_dostavlen = product(all_city, ('Доставлен', 'Доставлен - клиент не доволен')).result() #  Находим заказы с статусом Доставлен и доставлен не доволен
-
             # Проверяем полученные заказы, соответствуют ли они времени
             true_zakaz_overdue = watch_edit_time(zakaz_overdue).result_hours()
-            true_zakaz_dostavlen = watch_edit_time(zakaz_overdue).result_days()
-
+            true_zakaz_dostavlen = watch_edit_time(zakaz_dostavlen).result_days()
             """ Ищем id с Веб Асиста"""
-            id_zakaz = edit_state('asda', true_zakaz_dostavlen).search_id_WA()
+            id_zakaz = edit_state('Выполнен', true_zakaz_dostavlen).search_id_WA()
+            edit_state('Выполнен', id_zakaz).edit_stete_WA()
 
-            edit_zakaz_overdue = edit_state("Отменен", true_zakaz_overdue).upgrade_state()
-            edit_zakaz_dostavlen = edit_state("Выполнен", true_zakaz_dostavlen).upgrade_state()
+            edit_state("Отменен", true_zakaz_overdue).upgrade_state()
+            edit_state("Выполнен", true_zakaz_dostavlen).upgrade_state()
 
             if current_time.hour in time_city:
                 zakaz = product(time_city[current_time.hour],"Доставлен (Без СМС)").result()  # Находим заказы с статусом Доставлен, для определенных городов
                 edit_zakaz = edit_state("Доставлен", true_zakaz_dostavlen).upgrade_state(1)
+        print('Уснули на 20 секунд')
         time.sleep(20)
 
 
 
 
-
+if __name__ == '__main__':
+    main()
 
 
 

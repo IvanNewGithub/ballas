@@ -43,8 +43,8 @@ class edit_state:
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         for id in self.all_zakaz:
             data = {"id": f"{id}"}
-            req = requests.get('https://hatiko.ru/api.php/shop.order.complete?access_token=6acf9ef3e246128715d8ecaf9d7e1a83',
-                               headers, data=data)
+            req = requests.post('https://hatiko.ru/api.php/shop.order.complete?access_token=6acf9ef3e246128715d8ecaf9d7e1a83',
+                               headers=headers, data=data)
 
 class product:
     def __init__(self, city,  state):

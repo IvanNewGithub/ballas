@@ -57,9 +57,10 @@ class product:
         self.params = {
             "limit": 100,
             "offset": 0,
-            "filter": f"state.name={self.state}" if type(self.state) == str else ','.join(('state.name=' + n for n in state)),
+            "filter": f"state.name={self.state}" if type(self.state) == str else ';'.join(('state.name=' + n for n in state)),
             "expand": "organization"
         }
+        # print(self.params)
     def result(self):
         zakazi = []
         for offset in range(0, 1000, 100):
@@ -100,9 +101,11 @@ class watch_edit_time:
             for item in req['rows']:
                 start_time = datetime.strptime(item['moment'], "%Y-%m-%d %H:%M:%S.%f")
                 time_difference = current_time - start_time
-                if 'state' in item['diff']:  # Проверяем, прошло ли более 48 часов
+                if 'diff' in item and 'state' in item['diff']:  # Проверяем, прошло ли более 48 часов
                     if time_difference > timedelta(days=14):
                         result.append(zakaz)
+                elif 'diff' not in item:
+                    print(zakaz)
         return result
 
 
@@ -112,12 +115,13 @@ def main():
     all_city = list(j for n in time_city.values() for j in n)
     while True:
         current_time = datetime.now().time()
-        if current_time.minute == 00: # Тут проверяем что должны быть ровные часы
+        if current_time.minute != 2: # Тут проверяем что должны быть ровные часы
             """ Надо из этой проверки запустить и 'отмененный статус' и 'доставлен' поменять в выполнен"""
             # В зависимости от статуса конечного
             # Шаг №1 получить заказы с определенным статусом с определенным городом
             zakaz_overdue = product(all_city,  "Истек срок резерва").result() #  Находим заказы с статусом Истек срок резерва
             zakaz_dostavlen = product(all_city, ('Доставлен', 'Доставлен - клиент не доволен')).result() #  Находим заказы с статусом Доставлен и доставлен не доволен
+            print('zakaz_dostavlen', '->', zakaz_dostavlen)
             # Проверяем полученные заказы, соответствуют ли они времени
             true_zakaz_overdue = watch_edit_time(zakaz_overdue).result_hours()
             true_zakaz_dostavlen = watch_edit_time(zakaz_dostavlen).result_days()
@@ -139,6 +143,7 @@ def main():
             if current_time.hour in time_city:
                 zakaz = product(time_city[current_time.hour],"Доставлен (Без СМС)").result()  # Находим заказы с статусом Доставлен, для определенных городов
                 edit_zakaz = edit_state("Доставлен", true_zakaz_dostavlen).upgrade_state(1)
+
         print('Уснули на 20 секунд')
         time.sleep(20)
 

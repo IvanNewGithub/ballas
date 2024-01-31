@@ -1,13 +1,33 @@
 import json
-
+from datetime import datetime, timedelta
 import requests
-def edit_datetime(zakaz):
-    zakaz = '2214bd95-27bd-11ee-0a80-1421000e4125'
-    headers2 = {
-        "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
+import time
+start = datetime.now()
+new = start - timedelta(days=14)
+new_time = (str(new).split('.')[0])
+# start_time = datetime.strptime(str(new), "%Y-%m-%d %H:%M:%S")
+
+new1 = new.strftime("%Y-%m-%d %H:%M:%S")
+print(new1)
+
+
+
+
+headers = {
+    "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
     }
-    url = f'https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}/audit'
-    req = requests.get(url, headers=headers2).json()
-    with open('data.json', 'w')as j:
-        json.dump(req, j, ensure_ascii=False, indent=4)
-edit_datetime('1323123')
+params = {
+        "limit": 100,
+        "offset": 0,
+        "filter": f"state.name=Доставлен - клиент не доволен; moment<={new1}"
+    }
+
+def search_id_WA():
+    url = 'https://api.moysklad.ru/api/remap/1.2/entity/customerorder'
+    req = requests.get(url, headers=headers, params=params)
+    with open ('file.json', 'w')as file:
+        json.dump(req.json(), file, ensure_ascii=False,  indent=4)
+    print('Скачали')
+
+search_id_WA()
+

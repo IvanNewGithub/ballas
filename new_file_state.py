@@ -110,23 +110,25 @@ class watch_edit_time:
             url = f'https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}/audit'
             current_time = datetime.now()
             while True:
-                req = connect_MS(url)
-                if req.status_code == 200:
-                    data = req.json()
-                    break
-                else:
+                try:
+                    req = connect_MS(url)
+                    if req.status_code == 200:
+                        data = req.json()
+                        break
+                except:
                     print("заного")
                     time.sleep(3)
+
             for item in data['rows']:
                 start_time = datetime.strptime(item['moment'], "%Y-%m-%d %H:%M:%S.%f")
                 time_difference = current_time - start_time
                 if 'diff' in item and 'state' in item['diff']:  # Проверяем, прошло ли более 48 часов
-                    if time_difference.days > 14:
+                    if time_difference.days >= 13:
                         print(zakaz)
                         result.append(zakaz)
                     break
                 else:
-                    print(time_difference.days)
+                    print("time_difference.days", time_difference.days)
         return result
 
 
@@ -143,6 +145,7 @@ def main():
             zakaz_overdue = product(all_city,  "Истек срок резерва").result() #  Находим заказы с статусом Истек срок резерва
             zakaz_dostavlen = product(all_city, ('Доставлен', 'Доставлен - клиент не доволен')).result() #  Находим заказы с статусом Доставлен и доставлен не доволен
             print('zakaz_dostavlen', 'Всего:', len(zakaz_dostavlen), '->', zakaz_dostavlen)
+
             # Проверяем полученные заказы, соответствуют ли они времени
             true_zakaz_overdue = watch_edit_time(zakaz_overdue).result_hours()
             true_zakaz_dostavlen = watch_edit_time(zakaz_dostavlen).result_days()
@@ -160,8 +163,7 @@ def main():
             else:
                 print('Заказов для редактирования в Web Asyst не найдено')
 
-# 109236
-# 109441
+
 
             if current_time.hour in time_city:
                 zakaz = product(time_city[current_time.hour],"Доставлен (Без СМС)").result()  # Находим заказы с статусом Доставлен, для определенных городов

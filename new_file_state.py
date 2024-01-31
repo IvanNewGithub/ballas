@@ -125,11 +125,11 @@ class watch_edit_time:
                 time_difference = current_time - start_time
                 if 'diff' in item and 'state' in item['diff']:  # Проверяем, прошло ли более 48 часов
                     if time_difference.days >= 13:
-                        print(zakaz)
+                        # print(zakaz)
                         result.append(zakaz)
                     break
-                else:
-                    print("time_difference.days", time_difference.days)
+                # else:
+                #     print("time_difference.days", time_difference.days)
         return result
 
 

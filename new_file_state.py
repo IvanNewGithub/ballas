@@ -38,7 +38,7 @@ class edit_state:
     def search_id_WA(self):
         id = []
         for zakaz in self.all_zakaz:
-            url = f'https://hatiko.ru/api.php/shop.order.search?hash=search%2Fmoyskladapi_id%{zakaz}&access_token=6acf9ef3e246128715d8ecaf9d7e1a83'
+            url = f'https://hatiko.ru/api.php/shop.order.search?hash=search%2Fmoyskladapi_id%3D{zakaz}&access_token=6acf9ef3e246128715d8ecaf9d7e1a83'
             id.append(requests.get(url).json()['orders'][0]['id'])
         return id
 
@@ -142,6 +142,7 @@ def main():
             # Шаг №1 получить заказы с определенным статусом с определенным городом
             zakaz_overdue = product(all_city,  "Истек срок резерва").result() #  Находим заказы с статусом Истек срок резерва
             zakaz_dostavlen = product(all_city, ('Доставлен', 'Доставлен - клиент не доволен')).result() #  Находим заказы с статусом Доставлен и доставлен не доволен
+            print('zakaz_dostavlen', 'Всего:', len(zakaz_dostavlen), '->', zakaz_dostavlen)
             # Проверяем полученные заказы, соответствуют ли они времени
             true_zakaz_overdue = watch_edit_time(zakaz_overdue).result_hours()
             true_zakaz_dostavlen = watch_edit_time(zakaz_dostavlen).result_days()
@@ -159,7 +160,8 @@ def main():
             else:
                 print('Заказов для редактирования в Web Asyst не найдено')
 
-
+# 109236
+# 109441
 
             if current_time.hour in time_city:
                 zakaz = product(time_city[current_time.hour],"Доставлен (Без СМС)").result()  # Находим заказы с статусом Доставлен, для определенных городов

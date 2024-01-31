@@ -106,30 +106,47 @@ class watch_edit_time:
         return result
     def result_days(self):
         result = []
+        with open('id.json', 'r')as js:
+            id_skip = json.load(js)
         for zakaz in self.all_zakaz:
             time.sleep(1)
             url = f'https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}/audit'
             current_time = datetime.now()
-            while True:
-                try:
-                    req = connect_MS(url)
-                    if req.status_code == 200:
-                        data = req.json()
-                        break
-                except:
-                    print("заного")
-                    time.sleep(3)
+            # print('Дней прошло', (current_time - datetime.strptime(id_skip.get(zakaz, current_time), "%Y-%m-%d %H:%M:%S.%f")).days)
 
-            for item in data['rows']:
-                start_time = datetime.strptime(item['moment'], "%Y-%m-%d %H:%M:%S.%f")
-                time_difference = current_time - start_time
-                if 'diff' in item and 'state' in item['diff']:  # Проверяем, прошло ли более 48 часов
-                    if time_difference.days >= 13:
-                        # print(zakaz)
-                        result.append(zakaz)
-                    break
-                # else:
-                #     print("time_difference.days", time_difference.days)
+            if zakaz in id_skip and (current_time - datetime.strptime(id_skip[zakaz], "%Y-%m-%d %H:%M:%S.%f")).days > 14:
+                result.append(zakaz)
+                del id_skip[zakaz]
+            else:
+                while True:
+                    try:
+                        req = connect_MS(url)
+                        if req.status_code == 200:
+                            data = req.json()
+                            break
+                    except:
+                        print("заного")
+                        time.sleep(3)
+
+                for item in data['rows']:
+                    start_time = datetime.strptime(item['moment'], "%Y-%m-%d %H:%M:%S.%f")
+                    time_difference = current_time - start_time
+                    if 'diff' in item and 'state' in item['diff']:  # Проверяем, прошло ли более 48 часов
+                        if time_difference.days >= 13:
+                            # print(zakaz)
+                            result.append(zakaz)
+                        else:
+                            data = {zakaz: start_time}
+                            with open('id.json', 'r') as file:
+                                data = json.load(file)
+                                if zakaz not in data:
+                                    data[zakaz] = item['moment']
+                                    with open('id.json', 'w')as j:
+                                        json.dump(data, j, ensure_ascii=False, indent=4)
+                            pass
+                        break
+        with open('id.json', 'w') as file:
+            json.dump(id_skip, file, ensure_ascii=False, indent=4)
         return result
 
 
@@ -139,7 +156,7 @@ def main():
     all_city = list(j for n in time_city.values() for j in n)
     while True:
         current_time = datetime.now().time()
-        if current_time.minute != 2: # Тут проверяем что должны быть ровные часы
+        if current_time.minute == 13: # Тут проверяем что должны быть ровные часы
             """ Надо из этой проверки запустить и 'отмененный статус' и 'доставлен' поменять в выполнен"""
             # В зависимости от статуса конечного
             # Шаг №1 получить заказы с определенным статусом с определенным городом

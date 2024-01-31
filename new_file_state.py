@@ -87,13 +87,14 @@ class watch_edit_time:
             url = f'https://api.moysklad.ru/api/remap/1.2/entity/customerorder/{zakaz}/audit'
             current_time = datetime.now()
             while True:
-                req = connect_MS(url)
-                if req.status_code == 200:
-                    data = req.json()
-                    break
-                else:
+                try:
+                    req = connect_MS(url)
+                    if req.status_code == 200:
+                        data = req.json()
+                        break
+                except:
                     print("заного")
-                    time.sleep(1)
+                    time.sleep(3)
             # req = requests.get(url, headers=headers).json()
             for item in data['rows']:
                 start_time = datetime.strptime(item['moment'], "%Y-%m-%d %H:%M:%S.%f")

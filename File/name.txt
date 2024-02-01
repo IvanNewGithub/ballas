@@ -2,3 +2,9 @@
 
 номер телефона = rows -> agent -> phone
 id заказа = demands ->
+
+
+rows[0]['id'] # Какой-то id
+rows[0]['agent']['phone'] # Номер телефона клиента
+rows[0]['positions']['rows'][0]['assortment']['externalCode'] # Внешний код Товара из возврата
+rows[0]['positions']['rows'][0]['things'] # Серийный номер проданного товара

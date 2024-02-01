@@ -1,5 +1,7 @@
 import json
 import requests as r
+import re
+from phonemask import phone_check
 import time
 from datetime import datetime, timedelta
 
@@ -27,18 +29,18 @@ def search_salereturn():
         json.dump(data, j, ensure_ascii=False, indent=4)
     for x in data['rows']:
         # print(x['phone'])
-        phone = x['agent']['phone']
         try:
-            if phone not in result:
+            phone = phone_check(x['agent']['phone'])
+            if phone not in result and phone != 0:
                 result[phone] = {}
             if x['id'] not in result[phone]:
-                result[phone][x['id']] = {}
+                result[phone][x['id']] = []
             # result.setdefault(x['agent']['phone'], {})
-            result[phone].setdefault('id заказа', []).append(x['id'])
-            result[phone].setdefault('Номер заказа', []).append(x['name'])
-            result[phone]['Внешний код товара'] = []
+            # result[phone].setdefault('id заказа', []).append(x['id'])
+            # result[phone].setdefault('Номер заказа', []).append(x['name'])
+            # result[phone]['Внешний код товара'] = []
             for j in x['positions']['rows']:
-                result[x['agent']['phone']]['Внешний код товара'].append(j['assortment']['externalCode'])
+                result[phone][x['id']].append(j['assortment']['externalCode'])
                 # result[x['agent']['phone']]['Внешний код товара'][j['assortment']['externalCode']] = j['things']
         except:
             pass
@@ -57,7 +59,7 @@ class product:
         self.params = {
             "limit": 100,
             "offset": offset,
-            "filter": f"state.name={self.state}" if type(self.state) == str else ';'.join(('state.name=' + n for n in state)),
+            # "filter": f"state.name={self.state}" if type(self.state) == str else ';'.join(('state.name=' + n for n in state)),
             "expand": "agent, positions.assortment"
         }
 
@@ -89,9 +91,9 @@ def main_2():
 
         for item in data['rows']:
             try:
-                name = item['agent']['phone']
+                name = phone_check(item['agent']['phone'])
                 id_account = item['agent']['meta']['href'].split('/')[-1]
-                if name not in result:
+                if name not in result and name != 0:
                     result[name] = {} # Создали ключ с именем ID контрагента
 
                 # теперь надо добавить ключ с id заказа
@@ -109,5 +111,5 @@ def main_2():
         json.dump(result, j, ensure_ascii=False, indent=4)
 
 
-
+# main_2()
 search_salereturn()

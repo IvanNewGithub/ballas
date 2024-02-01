@@ -8,3 +8,24 @@ rows[0]['id'] # Какой-то id
 rows[0]['agent']['phone'] # Номер телефона клиента
 rows[0]['positions']['rows'][0]['assortment']['externalCode'] # Внешний код Товара из возврата
 rows[0]['positions']['rows'][0]['things'] # Серийный номер проданного товара
+
+
+
+
+# Нужно получить всех контрагентов и список их заказов со статусом "Выполнен"
+
+
+
+# https://api.moysklad.ru/api/remap/1.2/report/counterparty/b03837bb-de12-11ed-0a80-10230027b984
+    Тут можно получить количество купленных товаров и кол-во возвращенных товаров
+    Если купленных больше, добавляем в подсчет баллов
+
+# Вот тут получаем все заказы и позиции в заказе
+https://api.moysklad.ru/api/remap/1.2/entity/customerorder?expand=positions.assortment&limit=1
+
+
+
+
+Идентификатор контрагента
+
+['rows'][0]['agent']['meta']['href'].split('/')[1]

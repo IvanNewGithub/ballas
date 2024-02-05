@@ -73,10 +73,6 @@ def main_2():
     current = 0
     for offset in range(0, 40000, 100):
         data = product(all_city, 'Доставлен', offset).result()
-        if offset % 1000 == 0:
-            with open(f'./File/result{offset}.json', 'w') as j:
-                json.dump(result, j, ensure_ascii=False, indent=4)
-            print(f'прошли до {offset} позиции за', datetime.now() - start_time)
         for item in data['rows']:
             try:
                 name = phone_check(item['agent']['phone'])
@@ -98,6 +94,9 @@ def main_2():
                         result[name][item['id']]['Оплачено бонусами'] = balls['value']
             except:
                 pass
+
+        if len(data['rows']) < 100:
+            break
 
     print('Готово')
     print(datetime.now() - start_time)

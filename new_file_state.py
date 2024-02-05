@@ -64,7 +64,7 @@ class product:
         }
     def result(self):
         zakazi = []
-        for offset in range(0, 200, 100):
+        for offset in range(0, 400, 100):
             self.params['offset'] = offset
             req = requests.get(self.url, headers=headers, params=self.params)
             data = req.json()
@@ -168,7 +168,7 @@ def main():
             true_zakaz_overdue = watch_edit_time(zakaz_overdue).result_hours()
             true_zakaz_dostavlen = watch_edit_time(zakaz_dostavlen).result_days()
 
-            print('true_zakaz_dostavlen', 'Всего:', len(true_zakaz_dostavlen), '->', true_zakaz_dostavlen)
+            print('true_zakaz_dostavlen', 'Всего:', len(true_zakaz_dostavlen), 'в', current_time)
             # Изменяем статусы, на те что нам нужны
             edit_state("Отменен", true_zakaz_overdue).upgrade_state()
             edit_state("Выполнен", true_zakaz_dostavlen).upgrade_state()
@@ -186,9 +186,9 @@ def main():
             if current_time.hour in time_city:
                 zakaz = product(time_city[current_time.hour],"Доставлен (Без СМС)").result()  # Находим заказы с статусом Доставлен, для определенных городов
                 edit_zakaz = edit_state("Доставлен", zakaz).upgrade_state(1)
-
-        print('Уснули на 20 секунд')
-        time.sleep(20)
+        else:
+            print('Не прошли по времени', current_time.minute)
+            time.sleep(50)
 
 
 

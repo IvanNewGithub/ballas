@@ -10,12 +10,12 @@ headers = {
 }
 
 
-def search_salereturn():
+def search_salereturn(): # Ищем среди всех возвратов
     headers = {
         "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
     }
     result = {}
-    for offset in range(0,700,100):
+    for offset in range(0, 700, 100):
         params = {
             "limit": 100,
             "offset": offset,
@@ -25,10 +25,7 @@ def search_salereturn():
 
         url = "https://api.moysklad.ru/api/remap/1.2/entity/salesreturn"
         data = r.get(url, headers=headers, params=params).json()
-        # with open('File/return_sale.json', 'w') as j:
-        #     json.dump(data, j, ensure_ascii=False, indent=4)
         for x in data['rows']:
-            # print(x['phone'])
             try:
                 id_zakaz = x['demand']['customerOrder']['meta']['href'].split('/')[-1]
                 phone = phone_check(x['agent']['phone'])
@@ -38,41 +35,43 @@ def search_salereturn():
                     result[phone][id_zakaz] = []
                 for j in x['positions']['rows']:
                     result[phone][id_zakaz].append(j['assortment']['externalCode'])
-                    # result[x['agent']['phone']]['Внешний код товара'][j['assortment']['externalCode']] = j['things']
             except:
                 pass
 
     with open('File/salereturn.json', 'w') as j:
         json.dump(result, j, ensure_ascii=False, indent=4)
-    # print(r1, r1.text)
 
 
 class product:
-    def __init__(self, city, state, offset):
-        self.city = city
+    def __init__(self, state, offset):
         self.url = "https://api.moysklad.ru/api/remap/1.2/entity/customerorder"
         self.state = state
         self.offset = offset
         self.params = {
             "limit": 100,
-            "offset": self.offset,
+            "offset": 0,
             "filter": f"state.name=Выполнен;moment>2023-01-01 12:00:00;",
             "expand": "agent, positions.assortment"
         }
 
     def result(self):
-        req = r.get(self.url, headers=headers, params=self.params)
-        data = req.json()
-        return data
+        data_list = []
+        for item_offset in range(0, self.offset, 100):
+            self.params['offset'] = item_offset
+            req = r.get(self.url, headers=headers, params=self.params)
+            assert req.status_code == 200
+            data = req.json()
+            data_list.append(data)
+            if len(data['rows']) < 100:
+                break
+        return data_list
 
-def main_2():
-    time_city = {19: ('саратов', 'балаково'), 20: ('воронеж', 'липецк')}
-    all_city = list(j for n in time_city.values() for j in n)
+def all_sale(offset):
     result = {}
     start_time = datetime.now()
     current = 0
-    for offset in range(0, 40000, 100):
-        data = product(all_city, 'Доставлен', offset).result()
+    data_list = product( 'Доставлен', offset).result()
+    for data in data_list:
         for item in data['rows']:
             try:
                 name = phone_check(item['agent']['phone'])
@@ -87,22 +86,19 @@ def main_2():
                     externalCode = assortment['assortment']['externalCode']
                     if externalCode not in result[name][item['id']]:
                         result[name][item['id']][externalCode] = {}
-                    result[name][item['id']][externalCode]['Цена'] = (assortment['price'])
+                    result[name][item['id']][externalCode]['Цена'] = int(assortment['price'])/100
                     result[name][item['id']][externalCode]['Скидка'] = (assortment['discount'])
                 for balls in item['attributes']:
                     if balls['name'] == 'Оплачено бонусами':
                         result[name][item['id']]['Оплачено бонусами'] = balls['value']
-            except:
-                pass
-
-        if len(data['rows']) < 100:
-            break
+            except Exception as ex:
+                print('Ошибка', ex)
 
     print('Готово')
     print(datetime.now() - start_time)
     with open('./File/result.json', 'w') as j:
         json.dump(result, j, ensure_ascii=False, indent=4)
 
-
-main_2()
-# search_salereturn()
+if __name__ == '__main__':
+    all_sale(offset=300)
+    # search_salereturn() # Собираем возвраты

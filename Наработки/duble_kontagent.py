@@ -37,7 +37,9 @@ def obrabotka(current_tel):
         if item['есть основной?']:
             if item['phones'] not in result:
                 result[item['phones']] = {}
-            result[item['phones']]['osnova'] = item['id']
+            if 'osnova' not in  result[item['phones']]:
+                result[item['phones']]['osnova'] = []
+            result[item['phones']]['osnova'].append(item['id'])
         else:
             if item['phones'] not in result:
                 result[item['phones']] = {}
@@ -52,14 +54,15 @@ if __name__ == '__main__':
     id_table = '1V0thoYAF4quDw2bn2TZDv8mmOYLTW_kH0SkmFCqW4RQ'
     range = 'cust_file'
     data = google_requst(id_table, range).download_table()
-    # print(data['есть основной?'])
     df = data.replace('#N/A', None)
     contagent_MS = list(df.dropna(axis='index', how='any', subset=['есть основной?']))
-    # contagent_MS.to_csv('../File/contagent.csv')
-    # print(contagent_MS)
     current_tel = pd.DataFrame(df.loc[df['phones'].str.len() >= 11]) # Собираем только те строки, где длина номера больше или равна 11
-    print(type(current_tel))
+    # print(type(current_tel))
     current_tel.to_csv('../File/contagent.csv')
     with open('../File/dubl.json', 'w') as j:
         json.dump(obrabotka(current_tel), j, ensure_ascii=False, indent=4)
     print('Comlete!')
+    # with open('../File/dubl.json', 'r') as j:
+    #     datas = json.load(j)
+    #     new_datas = [key['osnova'] for key in datas.values() if 'osnova' in key and len(key['osnova']) >= 1]
+    #     print(new_datas)

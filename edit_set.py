@@ -22,7 +22,8 @@ def edit_set():
         req = requests.post(url, data=data)
         print(req.status_code)
 
-edit_set()
+if __name__ == '__main__':
+    edit_set()
 
 
 # keshbek-glavnaya

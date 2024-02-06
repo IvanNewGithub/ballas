@@ -10,12 +10,12 @@ headers = {
 }
 
 
-def search_salereturn(): # Ищем среди всех возвратов
+def search_salereturn():  # Ищем среди всех возвратов
     headers = {
         "Authorization": f'Basic Z2FsY2V2QHNrbDRkbTpMaVRGcUlBTQ=='
     }
     result = {}
-    for offset in range(0, 700, 100):
+    for offset in range(0, 2000, 100):
         params = {
             "limit": 100,
             "offset": offset,
@@ -37,6 +37,8 @@ def search_salereturn(): # Ищем среди всех возвратов
                     result[phone][id_zakaz].append(j['assortment']['externalCode'])
             except:
                 pass
+        if len(data['rows']) < 100:
+            break
 
     with open('File/salereturn.json', 'w') as j:
         json.dump(result, j, ensure_ascii=False, indent=4)
@@ -66,39 +68,51 @@ class product:
                 break
         return data_list
 
+
 def all_sale(offset):
     result = {}
     start_time = datetime.now()
-    current = 0
-    data_list = product( 'Доставлен', offset).result()
+    data_list = product('Доставлен', offset).result()
     for data in data_list:
         for item in data['rows']:
             try:
                 name = phone_check(item['agent']['phone'])
                 if name not in result and name != 0:
-                    result[name] = {} # Создали ключ с именем ID контрагента
+                    result[name] = {}  # Создали ключ с именем ID контрагента
                 # теперь надо добавить ключ с id заказа
                 if item['id'] not in result[name]:
                     result[name][item['id']] = {}
                     result[name][item['id']]['Дата заказа'] = item['created']
+                    result[name][item['id']]['Цена на заказ без скидки'] = 0
+                    result[name][item['id']]['Цена на заказ у с учетом скидки'] = int(item['sum']) / 100
+                    result[name][item['id']]['Скидка на заказ'] = 0
                 # Добавляем товары из сделки
                 for assortment in item['positions']['rows']:
                     externalCode = assortment['assortment']['externalCode']
                     if externalCode not in result[name][item['id']]:
                         result[name][item['id']][externalCode] = {}
-                    result[name][item['id']][externalCode]['Цена'] = int(assortment['price'])/100
+                    result[name][item['id']][externalCode]['Цена до скидки'] = int(assortment['price']) / 100 * \
+                                                                               assortment['quantity']
+                    result[name][item['id']]['Цена на заказ без скидки'] += result[name][item['id']][externalCode][
+                        'Цена до скидки']
+
+                    # result[name][item['id']][externalCode]['Цена до скидки'] = int(item['sum'])/100
                     result[name][item['id']][externalCode]['Скидка'] = (assortment['discount'])
                 for balls in item['attributes']:
                     if balls['name'] == 'Оплачено бонусами':
                         result[name][item['id']]['Оплачено бонусами'] = balls['value']
+                result[name][item['id']]['Скидка на заказ'] = result[name][item['id']]['Цена на заказ без скидки'] - \
+                                                              result[name][item['id']][
+                                                                  'Цена на заказ у с учетом скидки']
             except Exception as ex:
                 print('Ошибка', ex)
 
     print('Готово')
     print(datetime.now() - start_time)
-    with open('./File/result.json', 'w') as j:
+    with open('File/result.json', 'w') as j:
         json.dump(result, j, ensure_ascii=False, indent=4)
 
+
 if __name__ == '__main__':
-    all_sale(offset=300)
-    # search_salereturn() # Собираем возвраты
+    # all_sale(offset=34500)
+    search_salereturn() # Собираем возвраты

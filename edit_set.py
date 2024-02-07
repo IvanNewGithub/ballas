@@ -16,8 +16,8 @@ def edit_set():
     for id in id_all:
         url = f'https://hatiko.ru/api.php/shop.product.addToSet?id={id}&access_token=6acf9ef3e246128715d8ecaf9d7e1a83'
         data = {
-                # 'set_id': "keshbek-glavnaya"
-                'set_id': "best_price"
+                'set_id': "keshbek-glavnaya"
+                # 'set_id': "best_price"
             }
         req = requests.post(url, data=data)
         print(req.status_code)

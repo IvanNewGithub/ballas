@@ -44,7 +44,7 @@ for i in range(0, 73000, 100):
             result[name] = {}  # Создали ключ с именем ID контрагента
             result[name]['Счетчик бонусов'] = 0
         # print(name, item['agent']['phone'], item['id'])
-        # теперь надо добавить ключ с id заказа
+        # теперь надо добавить ключ с id заказа1
         if item['id'] not in result[name]:
             result[name][item['id']] = {}
             result[name][item['id']]['Дата заказа'] = item['created']

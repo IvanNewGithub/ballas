@@ -64,16 +64,19 @@ class product:
         }
     def result(self):
         zakazi = []
-        for offset in range(0, 400, 100):
+        for offset in range(0, 800, 100):
             self.params['offset'] = offset
             req = requests.get(self.url, headers=headers, params=self.params)
-            data = req.json()
-            for zakaz in data['rows']:
-                for cities in self.city:
-                    if cities in zakaz['organization']['name'].lower():
-                        zakazi.append(zakaz['id'])
-            if len(data['rows']) < 100:
-                break
+            if req.status_code == 200:
+                data = req.json()
+                for zakaz in data['rows']:
+                    for cities in self.city:
+                        if cities in zakaz['organization']['name'].lower():
+                            zakazi.append(zakaz['id'])
+                if len(data['rows']) < 100:
+                    break
+            else:
+                print(f'Не удалось собрать заказы в МC')
         return zakazi
 class watch_edit_time:
     def __init__(self, all_zakaz):

@@ -149,10 +149,10 @@ def all_sale(offset, mytable):
                     result[name][item['id']]['Цена на заказ без скидки'] = 0
                     result[name][item['id']]['Цена на заказ у с учетом скидки'] = 0
                     result[name][item['id']]['Скидка на заказ'] = 0
-
-                    for balls in item['attributes']:
-                        if balls['name'] == 'Оплачено бонусами':
-                            result[name][item['id']]['Оплачено бонусами'] = int(balls['value'])
+                    if 'attributes' in item:
+                        for balls in item['attributes']:
+                            if balls['name'] == 'Оплачено бонусами':
+                                result[name][item['id']]['Оплачено бонусами'] = int(balls['value'])
                     result[name][item['id']]['Оплачено бонусами'] = result[name][item['id']].get('Оплачено бонусами', 0)
                 # Добавляем товары из сделки
                 for assortment in item['positions']['rows']:

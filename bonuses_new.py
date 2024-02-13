@@ -300,18 +300,18 @@ if __name__ == '__main__':
     #_________Открываем продажи__________________________________
     for i in range(0, end, 100):
         try:
-            print('Прошли', i)
-            loaded_variable = product("Выполнен", i).result()
+            # print('Прошли', i)
+            # loaded_variable = product("Выполнен", i).result()
         # print(loaded_variable['rows'])
-        # filename = f"output_{i}.pkl"
-        # file_path = os.path.join(folder_path, filename)
-        # with open(file_path, 'rb') as file:
-        #     loaded_variable = pickle.load(file)
-        except:
-            break
+        filename = f"output_{i}.pkl"
+        file_path = os.path.join(folder_path, filename)
+        with open(file_path, 'rb') as file:
+            loaded_variable = pickle.load(file)
+        # except:
+        #     break
         result = main(loaded_variable, result)
-        if len(loaded_variable['rows']) < 100:
-            break
+        # if len(loaded_variable['rows']) < 100:
+        #     break
 
     with open('./File/zakazs_oborobotans.json', 'w') as file_1:
         json.dump(result, file_1, ensure_ascii=False, indent=4)
